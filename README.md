@@ -1,28 +1,71 @@
-# Agentic Dependency Updater MCP Server
+Agentic Dependency Updater — интеллектуальный инструмент для анализа и обновления зависимостей Python-проектов, использующий агентную архитектуру на базе LangGraph и LangChain.
 
-**Локальный ИИ-агент для безопасного и автоматизированного обновления зависимостей Python-проектов.**
+Ключевые возможности
 
-## Описание проекта
-Этот проект реализует концепцию **Agentic Engineering**, превращая обычную нейросеть в полноценного "исполнителя задач" [1, 3]. Система использует **LangGraph** как "мозг" для управления состоянием и **FastMCP** как "руки" для взаимодействия с файловой системой и внешним миром (PyPI) [4-6].
+Автоматическое сканирование — поиск всех файлов зависимостей (requirements.txt, pyproject.toml)
 
-### Ключевые возможности:
-* **Автономное планирование**: Агент сам решает, какие инструменты вызвать на основе SemVer обновлений [2, 7].
-* **Интеллектуальный анализ рисков**: Локальная LLM оценивает вероятность breaking changes при мажорных обновлениях [8-10].
-* **Полная локальность**: Работает без API-ключей, используя Transformers и SQLite для истории [11-13].
-* **Docker-ready**: Единый образ для запуска сервера и проведения тестов [14, 15].
+Агентная архитектура — 4 специализированных агента на базе LangGraph
 
-##  Технический стек
-* **Оркестратор**: LangGraph (графы состояний и циклическая логика) [4, 16, 17].
-* **Интерфейс инструментов**: FastMCP (Model Context Protocol) [5, 18, 19].
-* **LLM**: Transformers (DeepSeek-Coder / Mistral-Small) [10, 20, 21].
-* **База данных**: SQLite (эпизодическая память агента) [22, 23].
+Умный анализ версий — определение типа обновления (patch/minor/major)
 
-##  Быстрый старт
+Анализ рисков — LLM-анализ breaking changes для major-обновлений
 
-### Сборка контейнера
-```bash
-docker build -t dependency-updater .
-Запуск MCP-сервера
-docker run -p 8000:8000 dependency-updater serve
-Запуск smoke-теста
-docker run dependency-updater smoke
+История изменений — SQLite база данных для отслеживания обновлений
+
+Детальные отчёты — генерация структурированных Markdown-отчётов
+
+Проект построен на LangGraph с четырьмя специализированными агентами
+
+Scan Agent - Ищет файлы зависимостей в проекте
+
+Parse Agent - Читает файлы и извлекает зависимости
+
+Report Agent - Генерирует отчёт и сохраняет историю
+
+Process Agent - Проверяет версии, анализирует риски, обновляет
+
+Структура проекта
+
+<img width="962" height="798" alt="image" src="https://github.com/user-attachments/assets/b602fc55-ebce-4f91-8cbd-62cda8f5ff60" />
+
+Установка и запуск
+
+1. Клонирование репозитория
+
+git clone https://github.com/Podtverzhdeno/Agentic-dependency-updater-Hackathon.git
+
+cd Agentic-dependency-updater-Hackathon
+
+mv .env.example .env
+
+2. Настройка API ключа
+
+Зайдите на https://openrouter.ai/settings/keys и создайте бесплатный API_KEY
+
+зайдите в .env
+
+Найдите строчку OPENROUTER_API_KEY и вставьте API_KEY
+
+3. Сборка Docker-образа
+
+docker build -t agentic-dependency-updater .
+
+4. Запуск анализа проекта
+
+Локальный запуск (Windows/Linux/Mac)
+
+python entrypoint.py update ./demo_project ./data/history.db
+
+Запуск в Docker
+
+docker run --env-file .env agentic-dependency-updater update /app/demo_project /app/data/history.db
+
+Smoke-тест
+
+Локально
+
+python entrypoint.py update smoke
+
+В Docker
+
+docker run --env-file .env agentic-dependency-updater update smoke
