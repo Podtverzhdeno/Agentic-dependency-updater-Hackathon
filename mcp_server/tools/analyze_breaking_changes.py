@@ -1,3 +1,5 @@
+from unittest import result
+
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List
 from langchain_core.output_parsers import JsonOutputParser
@@ -14,7 +16,7 @@ def analyze_breaking_changes(
         package: str,
         current: str,
         latest: str,
-        llm: Any  # <-- Параметр ОБЯЗАТЕЛЬНЫЙ, без значения по умолчанию
+        llm: Any
 ) -> Dict[str, Any]:
     """
     Использует LLM для оценки рисков обновления пакета.

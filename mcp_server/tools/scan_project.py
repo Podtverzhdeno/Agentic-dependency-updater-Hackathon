@@ -28,3 +28,4 @@ def scan_project(path: str) -> List[str]:
                 dependency_files.append(full_path)
 
     return dependency_files
+

@@ -1,22 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.venv/
 
-### 3. Создайте `requirements.txt` (если ещё нет)
-
-```txt
-# Core
-pydantic>=2.5.0
-python-dotenv>=1.1.1
-
-# LangChain
-langchain>=0.1.0
-langchain-core>=0.1.0
-langchain-ollama>=0.1.0
-langgraph>=0.6.2
-
-# MCP
-fastmcp>=2.10.6
-mcp>=1.12.0
-uvicorn>=0.35.0
-
-# Tools
-toml>=0.10.2
-requests>=2.31.0
+# IDE
+.idea/
+.vscode/

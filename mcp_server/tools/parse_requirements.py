@@ -36,3 +36,4 @@ def parse_requirements(file_path: str) -> List[Dict[str, str]]:
         return [{"error": f"Could not read {file_path}: {str(e)}"}]
 
     return dependencies
+

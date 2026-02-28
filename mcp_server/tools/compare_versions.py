@@ -62,3 +62,4 @@ def compare_versions(current: str, latest: str) -> Dict[str, Optional[str]]:
             "needs_analysis": True,
             "error": f"Нестандартный формат версии: {e}"
         }
+

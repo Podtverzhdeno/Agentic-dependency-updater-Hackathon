@@ -2,6 +2,7 @@ import urllib.request
 import json
 from typing import Dict, Union
 
+
 def fetch_latest_version(package_name: str) -> Dict[str, Union[str, bool]]:
     """
     Запрашивает последнюю версию пакета из репозитория PyPI.
@@ -30,3 +31,4 @@ def fetch_latest_version(package_name: str) -> Dict[str, Union[str, bool]]:
         # В агентных системах важно возвращать структурированную ошибку,
         # чтобы LLM могла "отрефлексировать" её и продолжить работу [3, 4]
         return {"package": package_name, "error": str(e)}
+
