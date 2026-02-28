@@ -69,3 +69,8 @@ python entrypoint.py update smoke
 В Docker
 
 docker run --env-file .env agentic-dependency-updater update smoke
+
+**ПРЕЗЕНТАЦИЯ**
+
+
+[AI_Agents.pdf](https://github.com/user-attachments/files/25639821/AI_Agents.pdf)
