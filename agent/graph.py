@@ -1,7 +1,9 @@
+import os
+
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 from typing import Dict, Any, List
-from langchain_ollama import ChatOllama
-
 from agent.state import DependencyState
 from mcp_server.tools.scan_project import scan_project
 from mcp_server.tools.parse_requirements import parse_requirements
@@ -57,12 +59,19 @@ async def process_node(state: DependencyState):
 
     results = []
 
-    llm = ChatOllama(
-        model="qwen2.5:7b",
-        temperature=0,
-        base_url="http://localhost:11434"
-    )
-
+    load_dotenv()
+    def get_openrouter_llm(model="openai/gpt-5.2-chat"):
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            raise ValueError("OPENROUTER_API_KEY не найден в .env")
+        return ChatOpenAI(
+            model=model,
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1",
+            temperature=0,
+            max_tokens=100
+        )
+    llm = get_openrouter_llm
     for dep in state["dependencies"]:
         package = dep["name"]
         current_version = dep["version"]

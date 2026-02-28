@@ -1,6 +1,7 @@
-from langgraph.graph import StateGraph, END
-from langchain_ollama import ChatOllama
+import os
 
+from dotenv import load_dotenv
+from langgraph.graph import StateGraph, END
 from agent.state import DependencyState
 from mcp_server.tools.scan_project import scan_project
 from mcp_server.tools.parse_requirements import parse_requirements
@@ -12,7 +13,22 @@ from mcp_server.tools.save_to_history import save_to_history
 from mcp_server.tools.generate_report import generate_report
 from mcp_server.tools.analyze_breaking_changes import analyze_breaking_changes
 
-llm = ChatOllama(model="qwen2.5:7b", temperature=0, base_url="http://localhost:11434")
+from langchain_openai import ChatOpenAI
+
+load_dotenv()
+def get_openrouter_llm(model="openai/gpt-5.2-chat"):
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        raise ValueError("OPENROUTER_API_KEY не найден в .env")
+    return ChatOpenAI(
+        model=model,
+        api_key=api_key,
+        base_url="https://openrouter.ai/api/v1",
+        temperature=0,
+        max_tokens=100
+    )
+
+llm = get_openrouter_llm
 
 
 class BaseAgent:
