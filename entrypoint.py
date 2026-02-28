@@ -5,14 +5,15 @@ from datetime import datetime
 
 from agent.orchestrator import ScanAgent, ParseAgent, ProcessAgent, ReportAgent
 
+# Создаем MCP сервер
 mcp = FastMCP(
     name="Agentic Dependency Updater",
     instructions="Сервер для автоматического управления жизненным циклом зависимостей Python-проектов с агентами."
 )
 
-@mcp.get("/health")
-async def health_check():
-    """Проверка здоровья сервиса"""
+@mcp.tool()
+async def health_check() -> dict:
+    """Проверка здоровья сервиса (вызывается как tool)"""
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
@@ -20,17 +21,22 @@ async def health_check():
         "version": "1.0.0"
     }
 
-@mcp.get("/")
-async def root():
-    """Корневой endpoint с информацией"""
+@mcp.tool()
+async def get_service_info() -> dict:
+    """Информация о сервисе"""
     return {
         "name": "Agentic Dependency Updater",
         "version": "1.0.0",
-        "endpoints": {
-            "mcp": "/mcp (WebSocket)",
-            "health": "/health",
-            "tools": "доступны через MCP протокол"
-        }
+        "description": "MCP сервер для управления зависимостями",
+        "tools": [
+            "health_check",
+            "ping",
+            "scan_project_agent",
+            "parse_dependencies_agent",
+            "process_dependencies_agent",
+            "generate_report_agent",
+            "run_dependency_update"
+        ]
     }
 
 @mcp.tool()
@@ -100,13 +106,14 @@ async def run_dependency_update(project_path: str, db_path: str, ctx: Context):
 async def run_smoke_test():
     print(" Запуск smoke-теста...")
     try:
-        result = await ping("Smoke Test Connection")
-        print(f" Ping результат: {result}")
-
-        # Проверяем health endpoint
+        # Проверяем ping
+        ping_result = await ping("Smoke Test Connection")
+        print(f" Ping: {ping_result}")
+        
+        # Проверяем health
         health = await health_check()
-        print(f" Health check: {health['status']}")
-
+        print(f" Health: {health['status']}")
+        
         print(" Smoke-тест пройден!")
     except Exception as e:
         print(f" Ошибка smoke-теста: {e}")
@@ -117,6 +124,8 @@ class DummyContext:
     async def warning(self, msg): print(f"[WARN] {msg}")
     async def error(self, msg): print(f"[ERROR] {msg}")
     async def debug(self, msg): print(f"[DEBUG] {msg}")
+
+# ========== MAIN ==========
 
 def main():
     if len(sys.argv) < 2:
@@ -131,9 +140,9 @@ def main():
     if command == "serve":
         print(" Запуск MCP сервера...")
         print(f" MCP endpoint: http://0.0.0.0:8000/mcp")
-        print(f" Health check: http://0.0.0.0:8000/health")
-        print(f"ℹ  Info: http://0.0.0.0:8000/")
-
+        print(f" Health check tool: health_check()")
+        print(f"  Info tool: get_service_info()")
+        
         # Запускаем сервер
         mcp.run(transport="http", port=8000, host="0.0.0.0")
 
@@ -146,16 +155,16 @@ def main():
             sys.exit(1)
         project_path = sys.argv[2]
         db_path = sys.argv[3]
-
+        
         print(f" Анализ проекта: {project_path}")
         print(f" База данных: {db_path}")
-
+        
         result = asyncio.run(run_dependency_update(
             project_path,
             db_path,
             ctx=DummyContext()
         ))
-
+        
         if "report_path" in result:
             print(f"\n Готово! Отчет: {result['report_path']}")
         else:
